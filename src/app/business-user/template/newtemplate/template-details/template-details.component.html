@@ -1,0 +1,180 @@
+<form [formGroup]="templateForm" autocomplete="off">
+  <p-card styleClass="mainCard">
+    <div class="grid">
+      <div class="col-5">
+        <p-card styleClass="seperateCard1">
+          <div class="contents">
+            <label> Name</label> <br />
+            <span>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              pInputText
+              [value]="templateForm.value.name"
+              required
+              placeholder="Enter Template Name"
+              
+              [readOnly]="isDraftRedirect"
+            /><br>
+            <small style="color: red ;font-size: 16px;">
+              <app-print-error
+                [name]="templateForm.get('name')"
+              ></app-print-error>
+              </small>
+            <!-- <small
+            *ngIf="
+              !templateForm.get('name')?.valid &&
+              templateForm.get('name')?.touched
+            "
+          >
+            <span style="color: red">This field is required. <br>
+              Atleast 3 Characters are required. </span>
+          </small> -->
+            </span>
+          </div>
+
+          <div class="contents">
+            <label>Projects</label><br />
+            <span>
+            <p-dropdown
+              styleClass="dropdown1"
+              [options]="projects"
+              placeholder="Select"
+              optionLabel="projectName"
+             formControlName="projectName"
+              [required]="true"
+              [readonly]="isDraftRedirect"
+            ></p-dropdown>
+            <br>
+            <small
+            *ngIf="
+              !templateForm.get('projectName')?.valid &&
+              templateForm.get('projectName')?.touched
+            "
+          >
+            <span style="color: red">This field is required. </span>
+          </small>
+            </span>
+          </div>
+
+          <div class="contents">
+            <label>Description</label><br />
+            <span>
+            <textarea
+              required
+              name=""
+              formControlName="description"
+              id=""
+              cols="35"
+              rows="3"
+              [value]="templateForm.value.description"
+              pInputTextarea
+              placeholder="Enter Description"
+              required
+              [readOnly]="isDraftRedirect"
+            ></textarea>
+            <br>
+            <small style="color: red ;font-size: 16px;">
+              <app-print-error
+                [description]="templateForm.get('description')"
+              ></app-print-error>
+              </small>
+            <!-- <small
+            *ngIf="
+              !templateForm.get('description')?.valid &&
+              templateForm.get('description')?.touched
+            "
+          >
+            <span style="color: red">This field is required. <br>
+              Atleast 10 Characters are required. </span>
+          </small> -->
+            </span>
+          </div>
+        </p-card>
+      </div>
+
+      <div class="col-7">
+        <p-card styleClass="seperateCard">
+          <ng-template pTemplate="title">
+            <h4 class="para">Option 1</h4>
+          </ng-template>
+          <div class="grid">
+            <div class="col-8 para">
+              <p>Step 1: Download the excel format for master template</p>
+              <br />
+              <p>Step 2: Upload the filled excel sheet</p>
+              <br />
+              <p>Step 3: Click on next to view the master template</p>
+            </div>
+
+            <div class="col-4">
+              <button
+                class="p-button-sm mr-2 pbuttonclass"
+                icon="pi pi-download"
+                label="Download"
+                pButton
+              ></button>
+              <br />
+              <br />
+              <button
+                class="p-button-sm mr-2 pbuttonclass"
+                icon="pi pi-upload"
+                label="Upload"
+                pButton
+              ></button
+              ><br />
+            </div>
+          </div>
+        </p-card>
+        &nbsp; &nbsp;
+        <p-card styleClass="seperateCard">
+          <ng-template pTemplate="title">
+            <h4 class="para">Option 2</h4>
+          </ng-template>
+          <p class="para">
+            Click on next to use the blank canvas and create a master template
+          </p>
+        </p-card>
+      </div>
+    </div>
+  </p-card>
+
+  <div style="float: right; margin: 10px 10px">
+    <div style="margin-top: 10px">
+      <button
+        pButton
+        label="Cancel"
+        icon="pi pi-times-circle"
+        class="p-button-sm mr-2 pbuttonclass"
+        (click)="onClickCancel()"
+      ></button>
+      <span *ngIf="!isDraftRedirect">
+      <button
+        pButton
+        label="Save as Draft"
+        icon="pi pi-arrow-circle-down"
+        (click)="onSaveDraft()"
+        [disabled]="!templateForm.valid"
+        class="p-button-sm mr-2 pbuttonclass"
+      ></button>
+    </span>
+      <button
+        pTooltip="Next"
+        tooltipPosition="top"
+        pButton
+        icon="pi pi-chevron-right"
+        class="p-button-sm mr-2 pbuttonclass"
+        (click)="openNext()"
+        [disabled]="!templateForm.valid"
+      ></button>
+    </div>
+  </div>
+  <br />
+  <p-card class="cardd"></p-card>
+  <br />
+</form>
+<!-- 
+<span *ngIf="spinner" class="spinner">
+<p-progressSpinner></p-progressSpinner>
+</span> -->

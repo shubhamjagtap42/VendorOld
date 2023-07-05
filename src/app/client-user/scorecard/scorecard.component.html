@@ -1,0 +1,78 @@
+<div class="roles">
+  <h1>Proposals</h1>
+</div>
+
+<span class="p-input-icon-left">
+  <i class="pi pi-search"></i>
+  <input
+    type="text"
+    pInputText
+    (input)="dt.filterGlobal(target($event).value, 'contains')"
+    class="p-inputtext-sm"
+    placeholder="Search"
+  />
+</span>
+
+<!-- to view all Users -->
+<div class="card" style="margin-top: 10px">
+  <p-table
+    styleClass="p-datatable-sm p-datatable-gridlines templateTable"
+    #dt
+    [value]="scorecards"
+    [rows]="7"
+    [paginator]="true"
+    responsiveLayout="scroll"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+    [globalFilterFields]="[
+      'projectData.projectName',
+      'projectData.description',
+      'projectName',
+      'status',
+      'vendorObject.vendorName'
+    ]"
+  >
+    <ng-template pTemplate="header">
+      <tr class="myTable">
+        <th>Project Name</th>
+        <th>Description</th>
+        <th>Proposal Received</th>
+        <th>Vendor Name</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-scorecard>
+      <tr class="anchor-row">
+        <td>{{ scorecard.projectData.projectName }}</td>
+        <td>{{ scorecard.projectData.description }}</td>
+        <td></td>
+        <td>{{ scorecard.vendorObject.vendorName }}</td>
+        <td>
+          <span [class]="getStatusClass(scorecard.status)">{{
+            scorecard.status
+          }}</span>
+        </td>
+        <td>
+          <button
+            pTooltip="View"
+            tooltipPosition="top"
+            pButton
+            pRipple
+            icon="pi pi-folder-open"
+            class="p-button-success actionButton"
+            (click)="navigateTemplateDetails(scorecard.scoreCardId)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="flex align-items-center justify-content-between">
+        In total there are
+        {{ scorecards ? scorecards.length : 0 }} template.
+      </div>
+    </ng-template>
+  </p-table>
+</div>

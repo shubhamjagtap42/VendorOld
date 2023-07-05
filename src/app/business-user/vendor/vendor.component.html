@@ -1,0 +1,324 @@
+<div class="container">
+  <br />
+  <div class="roles">
+    <h1>Vendors</h1>
+  </div>
+  <br />
+
+  <div style="float: left">
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        class="p-inputtext-sm"
+        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+        placeholder="Search"
+      />
+    </span>
+  </div>
+  &nbsp;
+  <div style="float: right">
+    <button
+      pButton
+      label="Add New Vendor"
+      icon="pi pi-plus-circle"
+      (click)="onClickAddVendor()"
+      class="p-button-sm pbuttonclass"
+    ></button>
+  </div>
+  <br /><br /><br />
+  <!-- To add New Vendor Details -->
+  <form [formGroup]="vendorForm" autocomplete="off">
+    <p-dialog
+      [(visible)]="updateButton"
+      class="userDialog"
+      [(visible)]="addVendorDialogBox"
+      [breakpoints]="{ '960px': '75vw', '640px': '100vw' }"
+      [style]="{ width: '80vw', margin: '0px 20px' }"
+      (onHide)="onClickCancle()"
+    >
+      <ng-template pTemplate="header">
+        <div class="newroles">
+          <h1>{{ editVendorForm ? "Edit Vendor" : "Add New Vendor" }}</h1>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="content" class="content">
+        <div class="p-fluid grid">
+          <div class="field col-12 md:col-3">
+            <span>
+              <label for="vendorName">Vendor Name</label>
+              <input
+                type="text"
+                id="vendorName"
+                formControlName="vendorName"
+                pInputText
+                placeholder="Enter"
+              />
+              <small>
+                <app-print-error
+                  [vendorNameControl]="vendorForm.get('vendorName')"
+                ></app-print-error>
+              </small>
+            </span>
+          </div>
+
+          <div class="field col-12 md:col-3">
+            <span>
+              <label for="spocName">SPOC Name</label>
+              <input
+                type="text"
+                id="spocName"
+                formControlName="spocName"
+                pInputText
+                placeholder="Enter"
+              />
+              <small>
+                <app-print-error
+                  [spocName]="vendorForm.get('spocName')"
+                ></app-print-error>
+              </small>
+            </span>
+          </div>
+
+          <div class="field col-12 md:col-3">
+            <span>
+              <label for="email">Email ID</label>
+              <input
+                type="email"
+                placeholder="Enter"
+                id="email"
+                formControlName="email"
+                pInputText
+              />
+              <small>
+                <app-print-error
+                  [email]="vendorForm.get('email')"
+                ></app-print-error>
+              </small>
+              <!-- <small
+                *ngIf="
+                  !vendorForm.get('email')?.valid &&
+                  vendorForm.get('email')?.touched
+                "
+              >
+                <span style="color: red">This Field is required. <br>
+                  Please enter a valid email. </span>
+              </small> -->
+            </span>
+          </div>
+        </div>
+
+        <div class="p-fluid grid">
+          <div class="field col-12 md:col-3">
+            <label for="contactNumber">Contact Number</label>
+            <div class="p-inputgroup">
+              <span class="p-inputgroup-addon input">+91</span>
+              <input
+                type="text"
+                pInputText
+                id="contactNumber"
+                formControlName="contactNumber"
+              />
+            </div>
+            <small>
+              <app-print-error
+                [contactNumberControl]="vendorForm.get('contactNumber')"
+              ></app-print-error>
+            </small>
+          </div>
+
+          <div class="field col-12 md:col-3">
+            <span>
+              <label for="lineOfBusiness">Line Of Business</label>
+              <p-dropdown
+              [showClear]="true"
+                [required]="true"
+                styleClass="lineOfBusinessdropdown"
+                [options]="allLineOfBusiness"
+                formControlName="lineOfBusiness"
+                optionLabel="businessName"
+                optionValue="businessName"
+                placeholder="Select"
+                appendTo="body"
+                [filter]="true"
+                filterBy="businessName"
+              ></p-dropdown>
+              <small
+                *ngIf="
+                  !vendorForm.get('lineOfBusiness')?.valid &&
+                  vendorForm.get('lineOfBusiness')?.touched
+                "
+              >
+                <span style="color: red">This field is required. </span>
+              </small>
+            </span>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <span *ngIf="!editVendorForm">
+          <button
+            [disabled]="!vendorForm.valid"
+            pButton
+            icon="pi pi-check"
+            label="{{ updateButton ? 'Update' : 'Save' }}"
+            style="
+              background-color: #d04a02;
+              color: #ffffff;
+              border-color: #d04a02;
+              font-family: Helvetica;
+              font-size: 18px;
+            "
+            class="p-button-sm pbuttonclass"
+            (click)="save ? onClickSave() : onClickUpdate()"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-times"
+            label="Cancel"
+            (click)="onClickCancle()"
+            style="
+              background-color: #ffffff;
+              color: #d04a02;
+              border-color: #d04a02;
+              font-family: Helvetica;
+              font-size: 18px;
+            "
+            class="p-button-sm pbuttonclass"
+          ></button>
+        </span>
+
+        <span *ngIf="editVendorForm">
+          <button
+            pButton
+            icon="pi pi-times"
+            label="Cancel"
+            style="
+              background-color: #d04a02;
+              color: #ffffff;
+              border-color: #d04a02;
+              font-family: Helvetica;
+              font-size: 18px;
+            "
+            (click)="onClickCancle()"
+            class="p-button-sm pbuttonclass"
+          ></button>
+
+          <button
+            pButton
+            icon="pi pi-trash"
+            label="Delete"
+            style="
+              background-color: #ffffff;
+              color: #d04a02;
+              border-color: #d04a02;
+              font-family: Helvetica;
+              font-size: 18px;
+            "
+            (click)="deleteVendor(vendorData.vendorId)"
+            class="p-button-sm p-button-outlined"
+          ></button>
+
+          <button
+            pButton
+            [disabled]="!vendorForm.valid"
+            icon="pi pi-save"
+            label="Update"
+            class="p-button-sm pbuttonclass"
+            style="
+              background-color: #d04a02;
+              color: #ffffff;
+              border-color: #d04a02;
+              font-family: Helvetica;
+              font-size: 18px;
+            "
+            (click)="onClickUpdate()"
+          ></button>
+        </span>
+      </ng-template>
+    </p-dialog>
+  </form>
+
+  <!-- to view all Vendors -->
+  <div class="card" style="margin-top: 10px">
+    <p-table
+      styleClass="p-datatable-sm balancesheettable"
+      #dt
+      [value]="allVendors"
+      [rows]="5"
+      [paginator]="true"
+      responsiveLayout="scroll"
+      [rowHover]="true"
+      dataKey="id"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [showCurrentPageReport]="true"
+      [globalFilterFields]="[
+        'vendorName',
+        'spocName',
+        'email',
+        'contactNumber',
+        'lineOfBusiness'
+      ]"
+    >
+      <ng-template pTemplate="header">
+        <tr class="myTable">
+          <!-- <th></th> -->
+          <th pSortableColumn="vendorName">Vendor Name</th>
+          <th pSortableColumn="spocName">SPOC Name</th>
+          <th pSortableColumn="email">Email ID</th>
+          <th pSortableColumn="contactNumber">Mobile Number</th>
+          <th pSortableColumn="lineOfBusiness">Line Of Business</th>
+          <!-- <th></th> -->
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-vendor>
+        <tr (click)="editVendor(vendor.vendorId)">
+          <!-- <td>
+            <p-checkbox
+              name="group2"
+              value="vendor"
+              [value]="vendor.vendorId"
+              [(ngModel)]="selectedId"
+              [inputId]="vendor.vendorId"
+              [ngModelOptions]="{ standalone: true }"
+            ></p-checkbox>
+          </td> -->
+          <td>{{ vendor.vendorName }}</td>
+          <td>{{ vendor.spocName }}</td>
+          <td>{{ vendor.email }}</td>
+          <td>{{ vendor.contactNumber }}</td>
+          <td>{{ vendor.lineOfBusiness }}</td>
+          <!-- <td>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-sm mr-2 pbuttonclass"
+              (click)="editVendor(vendor.vendorId)"
+            ></button>
+          </td> -->
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+          In total there are {{ allVendors ? allVendors.length : 0 }} vendor.
+        </div>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Notification msg's -->
+  <p-toast></p-toast>
+  <p-confirmDialog
+    header="Confirmation"
+    icon="pi pi-exclamation-triangle"
+  ></p-confirmDialog>
+</div>
+<!-- Spinner -->
+<ng-container *ngIf="isLoading">
+  <div class="spinner"></div>
+  <app-spinner></app-spinner>
+</ng-container>

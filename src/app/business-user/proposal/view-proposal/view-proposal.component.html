@@ -1,0 +1,1264 @@
+<p-card styleClass="mainCard">
+  <ng-template pTemplate="header">
+    <div>
+      <div class="left-aligned">
+        <p for="Back button" class="header-back-button" (click)="onClickBack()">
+          <i class="pi pi-chevron-left"></i>
+          <span *ngIf="loadView">
+            {{ projectName }}
+          </span>
+          <span *ngIf="!loadView"> Back to proposal list </span>
+        </p>
+      </div>
+      <div class="clearfix"></div>
+      <div *ngIf="loadView">
+        <div>
+          <div class="left-aligned">
+            <strong>Proposal (4)</strong>
+          </div>
+
+          <div class="right-aligned">
+            <button
+              pButton
+              label="Generate Report"
+              icon="pi pi-settings"
+              class="p-button-sm pbuttonclass standard-button"
+            ></button>
+            <button
+              pButton
+              label="Share Proposal"
+              icon="pi pi-send"
+              class="p-button-sm pbuttonclass standard-button"
+              style="margin-right: 20px"
+              (click)="openShareOverlay($event)"
+            ></button>
+            <p-overlayPanel #shareOverlay [style]="{ width: '350px' }">
+              <ng-template pTemplate>
+                <div class="comment-overlay-panel">
+                  <p-tabView>
+                    <p-tabPanel header="Client"> Content 1 </p-tabPanel>
+                    <p-tabPanel header="Team"> Content 2 </p-tabPanel>
+                  </p-tabView>
+                </div>
+              </ng-template>
+            </p-overlayPanel>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <div>
+          <p-divider></p-divider>
+          <div>
+           <span *ngIf="scoreCardView">
+            <button
+            pButton
+            label="Download Proposal"
+            icon="pi pi-upload"
+            class="p-button-sm pbuttonclass standard-button"
+            (click)="onClickViewProposal()"
+          ></button>
+           </span>
+
+            <div *ngIf="!scoreCardView" class="right-aligned">
+              <label
+                style="
+                  padding: 10px !important;
+                  font-size: medium;
+                  font-weight: bold;
+                "
+                for=""
+                >Upload Proposal</label
+              >
+              <br />
+              <input
+                class="p-inputtext-sm padding"
+                type="file"
+                accept=".pdf"
+                pInputText
+                id="dos"
+                name="file"
+                formControlName="file"
+                required
+                autofocus
+                style="width: 100%"
+                (change)="selectFile1($event)"
+                #inputFile
+                placeholder="select proposal"
+              />
+              <!-- <button
+                pButton
+                label="View Proposal"
+                icon="pi pi-eye"
+                class="p-button-sm pbuttonclass standard-button"
+                style="margin-right: 20px"
+                (click)="onClickViewProposal()"
+              ></button> -->
+            </div>
+
+            <div class="left-aligned">
+              <p-dropdown
+                [options]="vendorList"
+                [(ngModel)]="selectedVendor"
+                placeholder="Select Vendor"
+                optionLabel="vendorName"
+                [filter]="true"
+                filterBy="vendorName"
+                [showClear]="true"
+              ></p-dropdown>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <hr style="width: 100%" />
+
+  <div *ngIf="!loadView" class="erroBox">
+    <p>Template is not Approved.</p>
+  </div>
+
+  <div *ngIf="loadView">
+    <form [formGroup]="templateForm" autocomplete="off">
+      <div formArrayName="category" class="container-with-scrollbar">
+        <table style="width: 100%">
+          <thead>
+            <tr>
+              <table>
+                <tr>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <th class="header">Category</th>
+                  <th class="weightage">Weightage</th>
+                  <table style="width: 100%">
+                    <tr>
+                      <th class="header">Primary Sub-Category</th>
+                      <th class="weightage">Weightage</th>
+
+                      <table style="width: 100%">
+                        <tr>
+                          <th class="header">Secondary Sub-Category</th>
+                          <th class="weightage">Weightage</th>
+                          <table style="width: 100%">
+                            <tr>
+                              <th class="header">Tertiary Sub-Category</th>
+                              <th class="weightage">Weightage</th>
+                              <table style="width: 100%">
+                                <tr>
+                                  <th class="header">Parameter</th>
+                                  <th class="weightage">Weightage</th>
+                                  <th class="weightage">Max Score</th>
+                                  <th class="weightage">Score</th>
+                                  <th class="header">Scoring Criteria</th>
+                                </tr>
+                              </table>
+                            </tr>
+                          </table>
+                        </tr>
+                      </table>
+                    </tr>
+                  </table>
+                </tr>
+              </table>
+            </tr>
+          </thead>
+          <tbody class="table1">
+            <table>
+              <tr
+                *ngFor="
+                  let category of getCategoryControls().controls;
+                  let i = index
+                "
+              >
+                <p-accordion>
+                  <ng-container>
+                    <p-accordionTab [selected]="true">
+                      <ng-template pTemplate="header">
+                        <div class="header1">
+                          {{ category.value.name }} ({{
+                            category.value.weightage
+                          }})
+                        </div>
+                      </ng-template>
+                      <div
+                        style="
+                          overflow-x: auto;
+                          overflow-x: hidden;
+                          height: 20rem;
+                        "
+                      >
+                        <table>
+                          <tr>
+                            <div [formGroupName]="i" class="display">
+                              <td style="width: 50%">
+                                <div style="position: relative">
+                                  <!-- <p-badge
+                      value="2"
+                      class="comment-badge"
+                      (click)="openViewCommentOverlay($event, 'category')"
+                    ></p-badge> -->
+                                  <p-cascadeSelect
+                                    [disabled]="true"
+                                    id="username"
+                                    formControlName="name"
+                                    [options]="categoriesData"
+                                    optionLabel="name"
+                                    optionValue="name"
+                                    optionGroupLabel="name"
+                                    [optionGroupChildren]="['states', 'cities']"
+                                    [style]="{ width: '14rem' }"
+                                    placeholder="Select"
+                                    appendTo="body"
+                                  >
+                                  </p-cascadeSelect>
+                                  <div *ngIf="access.optionButton.view">
+                                    <button
+                                      class="bottun-align"
+                                      mat-icon-button
+                                      [matMenuTriggerFor]="cat"
+                                      aria-label="Example icon-button with a menu"
+                                    >
+                                      <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <!-- <button type="button" (click)="addCategory()">Add Category</button>
+                                            <button type="button" (click)="removeCategory(i)">Remove Category</button> -->
+                                    <mat-menu #cat="matMenu">
+                                      <button
+                                        mat-menu-item
+                                        (click)="onSearchOption('category', i)"
+                                      >
+                                        <mat-icon>search</mat-icon>
+                                        <span>Search Category</span>
+                                      </button>
+                                      <button
+                                        mat-menu-item
+                                        (click)="onEditOption('category', i)"
+                                      >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Add Custom Category</span>
+                                      </button>
+                                      <button
+                                        mat-menu-item
+                                        (click)="initCombine(i, 'category')"
+                                      >
+                                        <mat-icon>merge_type</mat-icon>
+                                        <span>Combine with</span>
+                                      </button>
+                                    </mat-menu>
+                                  </div>
+                                </div>
+                              </td>
+                              <td style="width: 50%">
+                                <div>
+                                  <input
+                                    readonly
+                                    pInputText
+                                    type="text"
+                                    class="form-control inputBox"
+                                    formControlName="weightage"
+                                  />
+                                </div>
+                              </td>
+                              <!-- subcategory Start-->
+                              <div formArrayName="subcategory">
+                                <table style="width: 100%">
+                                  <tr
+                                    *ngFor="
+                                      let subCategory of getSubCategoryControls(
+                                        i
+                                      ).controls;
+                                      let j = index
+                                    "
+                                  >
+                                    <div [formGroupName]="j" class="display">
+                                      <td style="width: 50%">
+                                        <p-cascadeSelect
+                                          [disabled]="true"
+                                          id="subcategoryname"
+                                          formControlName="subcategoryname"
+                                          [options]="categoriesData"
+                                          optionLabel="name"
+                                          optionValue="name"
+                                          optionGroupLabel="name"
+                                          [optionGroupChildren]="[
+                                            'states',
+                                            'cities'
+                                          ]"
+                                          [style]="{ width: '14rem' }"
+                                          placeholder="Select"
+                                          appendTo="body"
+                                        >
+                                        </p-cascadeSelect>
+                                        <div *ngIf="access.optionButton.view">
+                                          <button
+                                            class="bottun-align"
+                                            mat-icon-button
+                                            [matMenuTriggerFor]="sub"
+                                            aria-label="Example icon-button with a menu"
+                                          >
+                                            <mat-icon>more_vert</mat-icon>
+                                          </button>
+                                          <mat-menu #sub="matMenu">
+                                            <button
+                                              mat-menu-item
+                                              (click)="
+                                                onSearchOption(
+                                                  'subCategory',
+                                                  i,
+                                                  j
+                                                )
+                                              "
+                                            >
+                                              <mat-icon>search</mat-icon>
+                                              <span>Search Sub-Category</span>
+                                            </button>
+                                            <button
+                                              mat-menu-item
+                                              (click)="
+                                                onEditOption(
+                                                  'subCategory',
+                                                  i,
+                                                  j
+                                                )
+                                              "
+                                            >
+                                              <mat-icon>edit</mat-icon>
+                                              <span
+                                                >Add Custom Sub-Category</span
+                                              >
+                                            </button>
+                                            <button
+                                              mat-menu-item
+                                              (click)="addSubCategory(i)"
+                                            >
+                                              <mat-icon>add</mat-icon>
+                                              <span>Add New Sub-Category</span>
+                                            </button>
+                                            <button
+                                              mat-menu-item
+                                              (click)="
+                                                initCombine(i, 'subCategory', j)
+                                              "
+                                            >
+                                              <mat-icon>merge_type</mat-icon>
+                                              <span>Combine with</span>
+                                            </button>
+                                            <button
+                                              [disabled]="
+                                                getSubCategoryControls(i)
+                                                  .length == 1
+                                                  ? true
+                                                  : false
+                                              "
+                                              mat-menu-item
+                                              (click)="removeSubCategory(i, j)"
+                                            >
+                                              <mat-icon>delete</mat-icon>
+                                              <span>Remove Sub-Category</span>
+                                            </button>
+                                          </mat-menu>
+                                        </div>
+                                      </td>
+                                      <td style="width: 50%">
+                                        <div>
+                                          <input
+                                            readonly
+                                            pInputText
+                                            type="text"
+                                            class="form-control inputBox"
+                                            formControlName="weightage"
+                                          />
+                                        </div>
+                                      </td>
+                                      <!-- subcategoryTwo Start -->
+                                      <div formArrayName="subcategoryTwo">
+                                        <table style="width: 100%">
+                                          <tr
+                                            *ngFor="
+                                              let subCategoryTwo of getSubCategoryTwoControls(
+                                                i,
+                                                j
+                                              ).controls;
+                                              let k = index
+                                            "
+                                          >
+                                            <div
+                                              [formGroupName]="k"
+                                              class="display"
+                                            >
+                                              <td>
+                                                <p-cascadeSelect
+                                                  [disabled]="true"
+                                                  id="subcategoryname"
+                                                  formControlName="subcategoryname"
+                                                  [options]="categoriesData"
+                                                  optionLabel="name"
+                                                  optionValue="name"
+                                                  optionGroupLabel="name"
+                                                  [optionGroupChildren]="[
+                                                    'states',
+                                                    'cities'
+                                                  ]"
+                                                  [style]="{ width: '14rem' }"
+                                                  placeholder="Select"
+                                                  appendTo="body"
+                                                >
+                                                </p-cascadeSelect>
+                                                <div
+                                                  *ngIf="
+                                                    access.optionButton.view
+                                                  "
+                                                >
+                                                  <button
+                                                    class="bottun-align"
+                                                    mat-icon-button
+                                                    [matMenuTriggerFor]="
+                                                      subCatTwo
+                                                    "
+                                                    aria-label="Example icon-button with a menu"
+                                                  >
+                                                    <mat-icon
+                                                      >more_vert</mat-icon
+                                                    >
+                                                  </button>
+                                                  <mat-menu
+                                                    #subCatTwo="matMenu"
+                                                  >
+                                                    <button
+                                                      mat-menu-item
+                                                      (click)="
+                                                        onSearchOption(
+                                                          'subCategoryTwo',
+                                                          i,
+                                                          j,
+                                                          k
+                                                        )
+                                                      "
+                                                    >
+                                                      <mat-icon
+                                                        >search</mat-icon
+                                                      >
+                                                      <span
+                                                        >Search Secondary
+                                                        Sub-Category</span
+                                                      >
+                                                    </button>
+                                                    <button
+                                                      mat-menu-item
+                                                      (click)="
+                                                        onEditOption(
+                                                          'subCategoryTwo',
+                                                          i,
+                                                          j,
+                                                          k
+                                                        )
+                                                      "
+                                                    >
+                                                      <mat-icon>add</mat-icon>
+                                                      <span
+                                                        >Add Custom Secondary
+                                                        Sub-Category</span
+                                                      >
+                                                    </button>
+                                                    <button
+                                                      mat-menu-item
+                                                      (click)="
+                                                        addSubCategoryTwo(i, j)
+                                                      "
+                                                    >
+                                                      <mat-icon>edit</mat-icon>
+                                                      <span
+                                                        >Add New Secondary
+                                                        Sub-Category</span
+                                                      >
+                                                    </button>
+                                                    <button
+                                                      mat-menu-item
+                                                      (click)="
+                                                        initCombine(
+                                                          i,
+                                                          'subCategoryTwo',
+                                                          j,
+                                                          k
+                                                        )
+                                                      "
+                                                    >
+                                                      <mat-icon
+                                                        >merge_type</mat-icon
+                                                      >
+                                                      <span>Combine with</span>
+                                                    </button>
+                                                    <button
+                                                      [disabled]="
+                                                        getSubCategoryTwoControls(
+                                                          i,
+                                                          j
+                                                        ).length == 1
+                                                          ? true
+                                                          : false
+                                                      "
+                                                      mat-menu-item
+                                                      (click)="
+                                                        removeSubCategoryTwo(
+                                                          i,
+                                                          j,
+                                                          k
+                                                        )
+                                                      "
+                                                    >
+                                                      <mat-icon
+                                                        >delete</mat-icon
+                                                      >
+                                                      <span
+                                                        >Remove Secondary
+                                                        Sub-Category</span
+                                                      >
+                                                    </button>
+                                                  </mat-menu>
+                                                </div>
+                                              </td>
+                                              <td>
+                                                <div>
+                                                  <input
+                                                    readonly
+                                                    pInputText
+                                                    type="text"
+                                                    class="form-control inputBox"
+                                                    formControlName="weightage"
+                                                  />
+                                                </div>
+                                              </td>
+                                              <!-- Start subcategoryThree -->
+                                              <div
+                                                formArrayName="subcategoryThree"
+                                              >
+                                                <table style="width: 100%">
+                                                  <tr
+                                                    *ngFor="
+                                                      let subCategoryThree of getSubCategoryThreeControls(
+                                                        i,
+                                                        j,
+                                                        k
+                                                      ).controls;
+                                                      let l = index
+                                                    "
+                                                  >
+                                                    <div
+                                                      [formGroupName]="l"
+                                                      class="display"
+                                                    >
+                                                      <td>
+                                                        <p-cascadeSelect
+                                                          [disabled]="true"
+                                                          id="subcategoryname"
+                                                          formControlName="subcategoryname"
+                                                          [options]="
+                                                            categoriesData
+                                                          "
+                                                          optionLabel="name"
+                                                          optionValue="name"
+                                                          optionGroupLabel="name"
+                                                          [optionGroupChildren]="[
+                                                            'states',
+                                                            'cities'
+                                                          ]"
+                                                          [style]="{
+                                                            width: '14rem'
+                                                          }"
+                                                          placeholder="Select"
+                                                          appendTo="body"
+                                                        >
+                                                        </p-cascadeSelect>
+                                                        <div
+                                                          *ngIf="
+                                                            access.optionButton
+                                                              .view
+                                                          "
+                                                        >
+                                                          <button
+                                                            class="bottun-align"
+                                                            mat-icon-button
+                                                            [matMenuTriggerFor]="
+                                                              subCatThree
+                                                            "
+                                                            aria-label="Example icon-button with a menu"
+                                                          >
+                                                            <mat-icon
+                                                              >more_vert</mat-icon
+                                                            >
+                                                          </button>
+                                                          <mat-menu
+                                                            #subCatThree="matMenu"
+                                                          >
+                                                            <button
+                                                              mat-menu-item
+                                                              (click)="
+                                                                onSearchOption(
+                                                                  'subCategoryThree',
+                                                                  i,
+                                                                  j,
+                                                                  k,
+                                                                  l
+                                                                )
+                                                              "
+                                                            >
+                                                              <mat-icon
+                                                                >search</mat-icon
+                                                              >
+                                                              <span
+                                                                >Search Tertiary
+                                                                Sub-Category</span
+                                                              >
+                                                            </button>
+                                                            <button
+                                                              mat-menu-item
+                                                              (click)="
+                                                                onEditOption(
+                                                                  'subCategoryThree',
+                                                                  i,
+                                                                  j,
+                                                                  k,
+                                                                  l
+                                                                )
+                                                              "
+                                                            >
+                                                              <mat-icon
+                                                                >edit</mat-icon
+                                                              >
+                                                              <span
+                                                                >Add Custom
+                                                                Tertiary
+                                                                Sub-Category</span
+                                                              >
+                                                            </button>
+                                                            <button
+                                                              mat-menu-item
+                                                              (click)="
+                                                                addSubCategoryThree(
+                                                                  i,
+                                                                  j,
+                                                                  k
+                                                                )
+                                                              "
+                                                            >
+                                                              <mat-icon
+                                                                >add</mat-icon
+                                                              >
+                                                              <span
+                                                                >Add new
+                                                                Tertiary
+                                                                Sub-Category</span
+                                                              >
+                                                            </button>
+                                                            <button
+                                                              mat-menu-item
+                                                              (click)="
+                                                                initCombine(
+                                                                  i,
+                                                                  'subCategoryThree',
+                                                                  j,
+                                                                  k,
+                                                                  l
+                                                                )
+                                                              "
+                                                            >
+                                                              <mat-icon
+                                                                >merge_type</mat-icon
+                                                              >
+                                                              <span
+                                                                >Combine
+                                                                Tertiary
+                                                                Sub-Category</span
+                                                              >
+                                                            </button>
+                                                            <button
+                                                              [disabled]="
+                                                                getSubCategoryThreeControls(
+                                                                  i,
+                                                                  j,
+                                                                  k
+                                                                ).length == 1
+                                                                  ? true
+                                                                  : false
+                                                              "
+                                                              mat-menu-item
+                                                              (click)="
+                                                                removeSubCategoryThree(
+                                                                  i,
+                                                                  j,
+                                                                  k,
+                                                                  l
+                                                                )
+                                                              "
+                                                            >
+                                                              <mat-icon
+                                                                >delete</mat-icon
+                                                              >
+                                                              <span
+                                                                >Remove Tertiary
+                                                                Sub-Category</span
+                                                              >
+                                                            </button>
+                                                          </mat-menu>
+                                                        </div>
+                                                      </td>
+                                                      <td>
+                                                        <div>
+                                                          <input
+                                                            readonly
+                                                            pInputText
+                                                            type="text"
+                                                            class="form-control inputBox"
+                                                            formControlName="weightage"
+                                                          />
+                                                        </div>
+                                                      </td>
+                                                      <!-- parameter Start-->
+                                                      <div
+                                                        formArrayName="parameter"
+                                                      >
+                                                        <table
+                                                          style="width: 100%"
+                                                        >
+                                                          <tr
+                                                            *ngFor="
+                                                              let subCategory of getParameterControls(
+                                                                i,
+                                                                j,
+                                                                k,
+                                                                l
+                                                              ).controls;
+                                                              let m = index
+                                                            "
+                                                          >
+                                                            <div
+                                                              [formGroupName]="
+                                                                m
+                                                              "
+                                                            >
+                                                              <!-- parameter -->
+                                                              <td>
+                                                                <p-cascadeSelect
+                                                                  [disabled]="
+                                                                    true
+                                                                  "
+                                                                  id="parametername"
+                                                                  formControlName="parametername"
+                                                                  [options]="
+                                                                    categoriesData
+                                                                  "
+                                                                  optionLabel="name"
+                                                                  optionValue="name"
+                                                                  optionGroupLabel="name"
+                                                                  [optionGroupChildren]="[
+                                                                    'states',
+                                                                    'cities'
+                                                                  ]"
+                                                                  [style]="{
+                                                                    width:
+                                                                      '14rem'
+                                                                  }"
+                                                                  placeholder="Select"
+                                                                  appendTo="body"
+                                                                >
+                                                                </p-cascadeSelect>
+                                                                <div
+                                                                  *ngIf="
+                                                                    access
+                                                                      .optionButton
+                                                                      .view
+                                                                  "
+                                                                >
+                                                                  <button
+                                                                    class="bottun-align"
+                                                                    mat-icon-button
+                                                                    [matMenuTriggerFor]="
+                                                                      para
+                                                                    "
+                                                                    aria-label="Example icon-button with a menu"
+                                                                  >
+                                                                    <mat-icon
+                                                                      >more_vert</mat-icon
+                                                                    >
+                                                                  </button>
+                                                                  <mat-menu
+                                                                    #para="matMenu"
+                                                                  >
+                                                                    <button
+                                                                      mat-menu-item
+                                                                      (click)="
+                                                                        onSearchOption(
+                                                                          'parameter',
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l,
+                                                                          m
+                                                                        )
+                                                                      "
+                                                                    >
+                                                                      <mat-icon
+                                                                        >search</mat-icon
+                                                                      >
+                                                                      <span
+                                                                        >Search
+                                                                        Parameter</span
+                                                                      >
+                                                                    </button>
+                                                                    <button
+                                                                      mat-menu-item
+                                                                      (click)="
+                                                                        onEditOption(
+                                                                          'parameter',
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l,
+                                                                          m
+                                                                        )
+                                                                      "
+                                                                    >
+                                                                      <mat-icon
+                                                                        >edit</mat-icon
+                                                                      >
+                                                                      <span
+                                                                        >Add
+                                                                        Custom
+                                                                        Parameter</span
+                                                                      >
+                                                                    </button>
+                                                                    <button
+                                                                      mat-menu-item
+                                                                      (click)="
+                                                                        addParameter(
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l
+                                                                        )
+                                                                      "
+                                                                    >
+                                                                      <mat-icon
+                                                                        >add</mat-icon
+                                                                      >
+                                                                      <span
+                                                                        >Add New
+                                                                        Parameter</span
+                                                                      >
+                                                                    </button>
+                                                                    <button
+                                                                      mat-menu-item
+                                                                      (click)="
+                                                                        initCombine(
+                                                                          i,
+                                                                          'parameter',
+                                                                          j,
+                                                                          k,
+                                                                          l,
+                                                                          m
+                                                                        )
+                                                                      "
+                                                                    >
+                                                                      <mat-icon
+                                                                        >merge_type</mat-icon
+                                                                      >
+                                                                      <span
+                                                                        >Move to
+                                                                        Existing
+                                                                        Subcategory</span
+                                                                      >
+                                                                    </button>
+                                                                    <button
+                                                                      [disabled]="
+                                                                        getParameterControls(
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l
+                                                                        )
+                                                                          .length ==
+                                                                        1
+                                                                          ? true
+                                                                          : false
+                                                                      "
+                                                                      mat-menu-item
+                                                                      (click)="
+                                                                        removeParameter(
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l,
+                                                                          m
+                                                                        )
+                                                                      "
+                                                                    >
+                                                                      <mat-icon
+                                                                        >delete</mat-icon
+                                                                      >
+                                                                      <span
+                                                                        >Delete</span
+                                                                      >
+                                                                    </button>
+                                                                  </mat-menu>
+                                                                </div>
+                                                              </td>
+                                                              <!-- weightage -->
+                                                              <td>
+                                                                <div>
+                                                                  <input
+                                                                    readonly
+                                                                    pInputText
+                                                                    type="text"
+                                                                    class="form-control inputBox"
+                                                                    formControlName="weightage"
+                                                                  />
+                                                                </div>
+                                                              </td>
+                                                              <!-- max score -->
+                                                              <td>
+                                                                <div>
+                                                                  <input
+                                                                    readonly
+                                                                    pInputText
+                                                                    type="text"
+                                                                    class="form-control inputBox"
+                                                                    id="maxschore"
+                                                                    formControlName="maxschore"
+                                                                  />
+                                                                </div>
+                                                              </td>
+
+                                                              <!-- score -->
+                                                              <td
+                                                                class="scoringCriteria"
+                                                              >
+                                                                <div
+                                                                  style="
+                                                                    position: relative;
+                                                                  "
+                                                                >
+                                                                  <div
+                                                                    style="
+                                                                      position: relative;
+                                                                    "
+                                                                  >
+                                                                    <p-badge
+                                                                      *ngIf="
+                                                                        subCategory
+                                                                          .value
+                                                                          .badgeCount >
+                                                                        0
+                                                                      "
+                                                                      [value]="
+                                                                        subCategory
+                                                                          .value
+                                                                          .badgeCount
+                                                                      "
+                                                                      class="comment-badge"
+                                                                      (click)="
+                                                                        openViewCommentOverlay(
+                                                                          $event,
+                                                                          subCategory
+                                                                            .value
+                                                                            .nodeId
+                                                                        )
+                                                                      "
+                                                                      severity="warning"
+                                                                    ></p-badge>
+                                                                  </div>
+
+                                                                  <input
+                                                                    pInputText
+                                                                    type="number"
+                                                                    class="form-control inputBox"
+                                                                    id="criteriaValue"
+                                                                    formControlName="score"
+                                                                  />
+                                                                </div>
+                                                              </td>
+                                                              <!-- scoring criteria -->
+                                                              <td>
+                                                                <div
+                                                                  formArrayName="schoringcriteria"
+                                                                >
+                                                                  <table
+                                                                    style="
+                                                                      width: 100%;
+                                                                    "
+                                                                  >
+                                                                    <tr
+                                                                      *ngFor="
+                                                                        let scoringCriteria of getScoringCriteriaControls(
+                                                                          i,
+                                                                          j,
+                                                                          k,
+                                                                          l,
+                                                                          m
+                                                                        )
+                                                                          .controls;
+                                                                        let n = index
+                                                                      "
+                                                                    >
+                                                                      <div
+                                                                        [formGroupName]="
+                                                                          n
+                                                                        "
+                                                                      >
+                                                                        <td>
+                                                                          <div>
+                                                                            <input
+                                                                              readonly
+                                                                              pInputText
+                                                                              type="text"
+                                                                              class="form-control"
+                                                                              id="criteriaValue"
+                                                                              formControlName="criteriaValue"
+                                                                            />
+                                                                            <div
+                                                                              *ngIf="
+                                                                                access
+                                                                                  .optionButton
+                                                                                  .view
+                                                                              "
+                                                                            >
+                                                                              <button
+                                                                                class="bottun-align"
+                                                                                mat-icon-button
+                                                                                [matMenuTriggerFor]="
+                                                                                  maxScore
+                                                                                "
+                                                                                aria-label="Example icon-button with a menu"
+                                                                              >
+                                                                                <mat-icon
+                                                                                  >more_vert</mat-icon
+                                                                                >
+                                                                              </button>
+                                                                              <mat-menu
+                                                                                #maxScore="matMenu"
+                                                                              >
+                                                                                <button
+                                                                                  mat-menu-item
+                                                                                  (click)="
+                                                                                    addScoringCriteria(
+                                                                                      i,
+                                                                                      j,
+                                                                                      k,
+                                                                                      l,
+                                                                                      m
+                                                                                    )
+                                                                                  "
+                                                                                >
+                                                                                  <mat-icon
+                                                                                    >edit</mat-icon
+                                                                                  >
+                                                                                  <span
+                                                                                    >Add
+                                                                                    Criteria</span
+                                                                                  >
+                                                                                </button>
+                                                                                <button
+                                                                                  [disabled]="
+                                                                                    getScoringCriteriaControls(
+                                                                                      i,
+                                                                                      j,
+                                                                                      k,
+                                                                                      l,
+                                                                                      m
+                                                                                    )
+                                                                                      .length ==
+                                                                                    1
+                                                                                      ? true
+                                                                                      : false
+                                                                                  "
+                                                                                  mat-menu-item
+                                                                                  (click)="
+                                                                                    removeScoringCriteria(
+                                                                                      i,
+                                                                                      j,
+                                                                                      k,
+                                                                                      l,
+                                                                                      m,
+                                                                                      n
+                                                                                    )
+                                                                                  "
+                                                                                >
+                                                                                  <mat-icon
+                                                                                    >delete</mat-icon
+                                                                                  >
+                                                                                  <span
+                                                                                    >Delete</span
+                                                                                  >
+                                                                                </button>
+                                                                              </mat-menu>
+                                                                            </div>
+                                                                          </div>
+                                                                        </td>
+                                                                      </div>
+                                                                    </tr>
+                                                                  </table>
+                                                                </div>
+                                                              </td>
+                                                            </div>
+                                                          </tr>
+                                                        </table>
+                                                      </div>
+                                                      <!-- parameter End -->
+                                                    </div>
+                                                  </tr>
+                                                </table>
+                                              </div>
+                                              <!-- End subcategoryThree -->
+                                            </div>
+                                          </tr>
+                                        </table>
+                                      </div>
+                                      <!-- subcategoryTwo End -->
+                                    </div>
+                                  </tr>
+                                </table>
+                              </div>
+                              <!-- subcategory End-->
+                            </div>
+                          </tr>
+                        </table>
+                      </div>
+                    </p-accordionTab>
+                  </ng-container>
+                </p-accordion>
+              </tr>
+            </table>
+          </tbody>
+        </table>
+      </div>
+    </form>
+    <p-divider></p-divider>
+    <div class="right-aligned">
+      <button
+        pButton
+        label="Save"
+        icon="pi pi-check-circle"
+        class="p-button-sm pbuttonclass standard-button"
+        (click)="onClickSave()"
+        [disabled]="
+          templateForm.invalid ||
+          !selectedVendor ||
+          (viewType == 'scorecard' && selectedTemplateData.status == 'Done')
+        "
+      ></button>
+      <button
+        pButton
+        label="Cancel"
+        icon="pi pi-times-circle"
+        class="p-button-sm pbuttonclass standard-button"
+        style="margin-right: 20px"
+        (click)="onClickCancel()"
+      ></button>
+    </div>
+    <div class="clearfix"></div>
+
+    <ng-template pTemplate="footer"> </ng-template>
+  </div>
+</p-card>
+
+<p-overlayPanel
+  *ngIf="scoreCardView"
+  #viewCommentOverlay
+  [style]="{ width: '350px' }"
+>
+  <ng-template pTemplate>
+    <p-progressSpinner *ngIf="!viewComment"></p-progressSpinner>
+    <div class="comment-overlay-panel" *ngIf="viewComment">
+      <div class="comment-overlay-panel-header">
+        <span>{{ commentData.comments.length }}</span> Comments
+      </div>
+      <div class="comment-overlay-panel-content">
+        <div class="comment-header">
+          <p-badge
+            [value]="getUserCommentBadge(commentData.userId)"
+            size="large"
+            severity="success"
+          ></p-badge>
+          <span>{{ commentData.userId }}</span>
+          <p>{{ commentData.issueText }}</p>
+        </div>
+        <ul class="comments">
+          <li
+            *ngFor="let comment of commentData.comments"
+            [class]="getCommentClass(comment.userId)"
+          >
+            {{ comment.commentText }}
+          </li>
+        </ul>
+      </div>
+      <div class="comment-overlay-panel-footer" #commentInput>
+        <form [formGroup]="commentForm">
+          <span
+            class="p-input-icon-right"
+            style="display: block"
+            *ngIf="
+              commentData.caseStatus == 'Pending' &&
+              selectedTemplateData.status != 'Done'
+            "
+          >
+            <i
+              class="pi pi-send"
+              style="color: #d04a02; cursor: pointer"
+              (click)="postComment()"
+            ></i>
+            <input
+              type="text"
+              formControlName="comment"
+              pInputText
+              style="width: 100%"
+              placeholder="Type Reply here"
+              (keyup)="postComment($event, true)"
+            />
+          </span>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+</p-overlayPanel>
+
+<!-- to upload proposal -->
+<p-dialog [(visible)]="uploadProposal">
+  <ng-template pTemplate="content">
+    <label for="uploadRfp">Upload RFP</label> <br />
+
+    <input
+      class="p-inputtext-sm padding"
+      type="file"
+      accept=".pdf"
+      pInputText
+      id="dos"
+      name="file"
+      formControlName="file"
+      required
+      autofocus
+      style="width: 100%"
+      (change)="selectFile1($event)"
+      #inputFile
+    />
+  </ng-template>
+  <!-- <ng-template pTemplate="footer">
+    <button
+      pButton
+      class="SaveDraftButton"
+      (click)="onClickProposalUpload()"
+      label="Upload"
+      icon="pi pi-draft"
+    ></button>
+  </ng-template> -->
+</p-dialog>
+
+<!-- Spinner -->
+<ng-container *ngIf="isLoading">
+  <div class="spinner"></div>
+  <app-spinner></app-spinner>
+</ng-container>
+
+<!-- Notification msg's -->
+<p-toast></p-toast>
+<p-confirmDialog
+  header="Confirmation"
+  icon="pi pi-exclamation-triangle"
+></p-confirmDialog>

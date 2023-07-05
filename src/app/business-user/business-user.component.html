@@ -1,0 +1,69 @@
+<div class="container">
+    <div class="cardData" style="width: 100%">
+      <span class="logo1" style="float: left">
+        <h2>
+          <i>
+            <b style="font-size: xx-large">PwC</b>
+          </i>
+          <span class="title1">Vendor Evaluation Tool</span>
+        </h2>
+      </span>
+      <span style="float: right; color: black;" class="options">
+        <!-- <span class="topOptions"> <i class="pi pi-cog"></i> Settings </span> -->
+        <span class="topOptions"> <i class="pi pi-bell"></i> Notifications </span>
+        <span style="float: right;" class="profileIcon" [matMenuTriggerFor]="cat">{{userName.substring(0,1)| uppercase}}</span>
+  
+      </span>
+  
+  
+      <mat-menu #cat="matMenu">
+        <span style="color: black; padding: 5px; text-align: center;">{{ userName |uppercase }}&nbsp;{{ lastName |uppercase }} (BUSINESS USER)</span> <br />
+        <button mat-menu-item (click)="onClickLogout()">
+         
+          <mat-icon>logout</mat-icon>
+          <span style="color: black">Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  
+    <!--IR DEMO SIDEBAR-->
+    <div class="sidenav" [ngClass]="collapsed ? 'sidenav-collapsed' : ''">
+      <div class="logo-container">
+        <span *ngIf="!collapsed" (click)="toggleCollapse()">
+          <img class="collapseIcon" src="assets/Images/collapse_out.png" alt=""  pTooltip="Open"/>
+        </span>
+  
+        <span *ngIf="collapsed" (click)="toggleCollapse()">
+          <img class="collapseIcon" src="assets\Images\collapse_in.png" alt=""  pTooltip="Collapse" />
+          <label class="collapse">Collapse</label>
+        </span>
+        <div class="logo-text" *ngIf="collapsed"></div>
+      </div>
+      <ul class="sidenav-nav">
+        <li class="sidenav-nav-item" *ngFor="let data of navData">
+          <a
+            class="sidenav-nav-link"
+            [routerLink]="[data.routeLink]"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="toggleCollapse1()"
+          >
+            <img class="sidenav-link-icon" [src]="[data.image]" alt="" [pTooltip]="data.tooltip" />
+  
+            <span class="sidenav-link-text" *ngIf="collapsed">
+              {{ data.label }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  
+    <div class="pages">
+      <!-- <p-progressBar *ngIf="pageProgressBar" mode="indeterminate" [style]="{'height': '6px', 'z-index':'11111'}"></p-progressBar> -->
+      <router-outlet></router-outlet>
+      <p-card styleClass="invisibaleCard"></p-card>
+    </div>
+  
+    <div class="blank"></div>
+  </div>
+  

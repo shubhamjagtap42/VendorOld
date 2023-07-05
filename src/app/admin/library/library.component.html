@@ -1,0 +1,191 @@
+<div style="margin-top: 50px">
+  <div>
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Search"
+        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+      />
+    </span>
+    &nbsp;
+    <p-dropdown
+      [options]="lineItemtypes"
+      [(ngModel)]="selectedType"
+      placeholder="Filter By"
+      optionLabel="type"
+      optionValue="type"
+      (onChange)="dt.filterGlobal($any(selectedType), 'equals')"
+      [showClear]="true"
+      [filter]="true"
+      filterBy="type"
+    ></p-dropdown>
+
+    <button
+      class="submitButton"
+      style="float: right"
+      pButton
+      label="Add"
+      icon="pi pi-plus-circle"
+      (click)="onClickAdd()"
+    ></button>
+    <span>
+      <button
+        [disabled]="!selectedProducts || !selectedProducts.length"
+        class="p-button-outlined deleteButton"
+        style="float: right"
+        pButton
+        label="Delete"
+        icon="pi pi-trash"
+        (click)="onClickDelete()"
+      ></button>
+    </span>
+  </div>
+  <!-- 
+      <div class="p-grid">
+      <div class="p-col-12 md:col-6"> -->
+  <p-table
+    #dt
+    [value]="categoriesData"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['value', 'type']"
+    [(selection)]="selectedProducts"
+    [rowHover]="true"
+    dataKey="id"
+    styleClass="p-datatable-sm categoryTable"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="header">
+      <tr class="myTable">
+        <th style="width: 4rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th style="width: 10rem">Sr. No</th>
+        <th pSortableColumn="value" style="min-width: 10rem">
+          Line Item Name <p-sortIcon field="value"></p-sortIcon>
+        </th>
+        <th pSortableColumn="type" style="width: 20rem">
+          Type <p-sortIcon field="type"></p-sortIcon>
+        </th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-category && let-i="rowIndex">
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="category"></p-tableCheckbox>
+        </td>
+        <td>{{ i + 1 }}</td>
+        <td (click)="onClickEdit(category)">{{ category.value }}</td>
+        <td (click)="onClickEdit(category)">{{ category.type }}</td>
+        <td>
+          <button
+          pTooltip="Edit"
+          tooltipPosition="top"
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-sm pbuttonclass mr-2 submitButton"
+            (click)="onClickEdit(category)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <!-- </div>
+   </div> -->
+
+  <form [formGroup]="categoryForm">
+    <div>
+      <p-dialog
+        class="userDialog"
+        [(visible)]="addCategoryDialogBox"
+        [style]="{ width: '30%', margin: '0px 20px' }"
+        (onHide)="onClickCancle()"
+      >
+        <ng-template pTemplate="header">
+          <h1>
+            <span>
+              <i class="pi pi-plus-circle"> </i>
+              <b>{{
+                editCategoryForm ? " Edit Line Item" : " Add Line Item"
+              }}</b>
+            </span>
+          </h1>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div>
+            <p-dropdown
+            [showClear]="true"
+              styleClass="lineItemDropdown"
+              [options]="lineItemtypes"
+              formControlName="type"
+              placeholder="Select"
+              optionLabel="type"
+              optionValue="type"
+              appendTo="body"
+              [filter]="true"
+              filterBy="type"
+            ></p-dropdown>
+          </div>
+          <div style="margin-top: 20px">
+            <input
+              formControlName="value"
+              type="text"
+              class="p-inputtext-sm"
+              style="width: 100%"
+              pInputText
+              placeholder="Enter"
+            />
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <span>
+            <button
+              class="p-button-outlined cancleButton"
+              style="float: left"
+              pButton
+              label="Cancel"
+              (click)="onClickCancle()"
+            ></button>
+          </span>
+          <span *ngIf="editCategoryForm">
+            <button
+              [disabled]="categoryForm.invalid"
+              class="p-button-outlined cancleButton"
+              style="float: right"
+              pButton
+              label="Edit"
+              (click)="onClickUpdate()"
+            ></button>
+          </span>
+          <span *ngIf="!editCategoryForm">
+            <button
+              [disabled]="categoryForm.invalid"
+              class="submitButton"
+              style="float: right"
+              pButton
+              label="Submit"
+              (click)="onClickSave()"
+            ></button>
+          </span>
+        </ng-template>
+      </p-dialog>
+    </div>
+  </form>
+</div>
+
+<!-- Notification msg's -->
+<p-toast></p-toast>
+<p-confirmDialog
+  header="Confirmation"
+  icon="pi pi-exclamation-triangle"
+></p-confirmDialog>
+<!-- Spinner -->
+<ng-container *ngIf="isLoading">
+  <div class="spinner"></div>
+  <app-spinner></app-spinner>
+</ng-container>

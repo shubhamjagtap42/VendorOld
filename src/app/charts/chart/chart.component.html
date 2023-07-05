@@ -1,0 +1,79 @@
+<div class="header">
+  <h3>Welcome To Vendor Chart</h3>
+</div>
+
+<div style="margin-left: 20px;">
+  <p-dropdown
+    [options]="data"
+    [(ngModel)]="selectedCity"
+    optionLabel="name"
+    optionValue="code"
+  ></p-dropdown>
+</div>
+
+
+<hr>
+<!-- <div style="width: 700px">
+ 
+</div> -->
+
+<div class="chartmodel">
+  <p-card
+    header="Bar Chart"
+    [style]="{ width: '27rem', 'margin-bottom': '2em' }"
+  >
+    <p-chart
+      type="bar"
+      [data]="basicData"
+      width="300px"
+      height="200px"
+    ></p-chart>
+  </p-card>
+</div>
+<div class="chartmodel">
+  <p-card
+    header="Pie Chart"
+    [style]="{ width: '27rem', 'margin-bottom': '2em' }"
+  >
+    <p-chart
+      type="pie"
+      [data]="basicData"
+      width="300px"
+      height="200px"
+    ></p-chart>
+  </p-card>
+</div>
+<div class="chartmodel">
+  <p-card
+    header="PolarArea Chart"
+    [style]="{ width: '27rem', 'margin-bottom': '2em' }"
+  >
+    <p-chart
+      type="polarArea"
+      [data]="basicData"
+      width="300px"
+      height="200px"
+    ></p-chart>
+  </p-card>
+</div>
+<div class="chartmodel">
+  <p-card
+    header="Line Chart"
+    [style]="{ width: '27rem', 'margin-bottom': '2em' }"
+  >
+    <p-chart
+      type="line"
+      [data]="basicData"
+      width="300px"
+      height="200px"
+    ></p-chart>
+  </p-card>
+</div>
+<!-- <div style="width: 700px">
+  <p-chart
+    type="doughnut"
+    [data]="basicData"
+    width="500px"
+    height="400px"
+  ></p-chart>
+</div> -->
